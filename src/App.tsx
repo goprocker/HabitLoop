@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useAuth } from './hooks/useAuth';
 import { useHabits } from './hooks/useHabits';
 import { HabitManager } from './components/HabitManager';
 import { DailyScore } from './components/DailyScore';
 import { WeeklyHeatmap } from './components/WeeklyHeatmap';
 import { SocialShareCard } from './components/SocialShareCard';
+import { LandingPage } from './components/LandingPage';
 import { exportToCSV } from './utils/exporting';
-import { Download, RefreshCcw, Loader2, Share2 } from 'lucide-react';
+import { Download, RefreshCcw, Loader2, Share2, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 
-function App() {
+function Dashboard({ signOut, userEmail }: { signOut: () => void; userEmail: string }) {
   const [currentDate] = useState(new Date());
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   
@@ -49,13 +51,15 @@ function App() {
 
       <div className="w-full max-w-[1000px] flex flex-col gap-8">
         
-        {/* Sleek Top Navigation */}
+        {/* Top Navigation */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800/50">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-black bg-gradient-to-r from-violet-500 to-pink-500 bg-clip-text text-transparent">
               HabitLoop
             </h1>
-            <span className="text-slate-500 font-medium border-l border-slate-800 pl-4">{format(currentDate, 'EEEE, MMMM do')}</span>
+            <span className="text-slate-500 font-medium border-l border-slate-800 pl-4 hidden sm:inline">
+              {format(currentDate, 'EEEE, MMMM do')}
+            </span>
           </div>
           
           <div className="flex items-center gap-3">
@@ -70,7 +74,7 @@ function App() {
               className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-600 rounded-md transition-colors"
             >
               <Share2 className="w-4 h-4 text-slate-400" />
-              <span className="text-xs font-semibold text-slate-300">Share</span>
+              <span className="text-xs font-semibold text-slate-300 hidden sm:inline">Share</span>
             </button>
 
             <button
@@ -78,8 +82,20 @@ function App() {
               className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-600 rounded-md transition-colors"
             >
               <Download className="w-4 h-4 text-slate-400" />
-              <span className="text-xs font-semibold text-slate-300">CSV Export</span>
+              <span className="text-xs font-semibold text-slate-300 hidden sm:inline">CSV</span>
             </button>
+
+            {/* User profile + Sign Out */}
+            <div className="flex items-center gap-2 pl-3 border-l border-slate-800">
+              <span className="text-xs text-slate-500 font-medium hidden md:inline truncate max-w-[140px]">{userEmail}</span>
+              <button
+                onClick={signOut}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </header>
 
@@ -99,7 +115,7 @@ function App() {
             />
           </main>
 
-          {/* Detailed Data Column */}
+          {/* Stats Column */}
           <aside className="md:col-span-4 flex flex-col gap-6">
             <DailyScore percentage={progressPercentage} />
             <WeeklyHeatmap 
@@ -120,6 +136,24 @@ function App() {
       </div>
     </div>
   );
+}
+
+function App() {
+  const { user, loading, signInWithGoogle, signOut } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LandingPage onSignIn={signInWithGoogle} />;
+  }
+
+  return <Dashboard signOut={signOut} userEmail={user.email || 'User'} />;
 }
 
 export default App;

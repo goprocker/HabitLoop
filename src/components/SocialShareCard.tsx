@@ -1,5 +1,4 @@
-import React from 'react';
-import { Share2, Download, X } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 import * as htmlToImage from 'html-to-image';
 import { format } from 'date-fns';
 

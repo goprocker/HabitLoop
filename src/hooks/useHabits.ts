@@ -38,8 +38,8 @@ export function useHabits(currentDate: Date) {
       const fullLogs = logsData || [];
 
       // Augment habits with streaks
-      const augmentedHabits = (habitsData || []).map(h => {
-        const streaks = calculateStreaks(h.id, fullLogs, currentDate);
+      const augmentedHabits = ((habitsData || []) as Habit[]).map((h: Habit) => {
+        const streaks = calculateStreaks(h.id, fullLogs as HabitLog[], currentDate);
         return {
           ...h,
           currentStreak: streaks.current,
@@ -70,7 +70,7 @@ export function useHabits(currentDate: Date) {
         .single();
 
       if (error) throw error;
-      setHabits((prev) => [...prev, { ...data, currentStreak: 0, highestStreak: 0 }]);
+      setHabits((prev) => [...prev, { ...(data as Habit), currentStreak: 0, highestStreak: 0 }]);
     } catch (err: any) {
       console.error('Error adding habit:', err);
       throw err;

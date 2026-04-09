@@ -1,4 +1,4 @@
-import { differenceInDays, parseISO, startOfDay, isBefore } from 'date-fns';
+import { differenceInDays, parseISO } from 'date-fns';
 import type { Database } from '../types/database';
 
 type HabitLog = Database['public']['Tables']['habit_logs']['Row'];
@@ -34,12 +34,6 @@ export function calculateStreaks(habitId: string, allLogs: HabitLog[], currentDa
 
   // Calculate current streak
   let currentRun = 0;
-  const todayStr = currentDate.toISOString().split('T')[0];
-  const todayIndex = completedDates.indexOf(todayStr);
-  
-  // To avoid breaking streak if today isn't logged yet, we check from yesterday or today
-  let startIndex = 0;
-  
   // If recent log is more than 1 day ago (excluding today), current streak is 0
   const mostRecent = completedDates[0];
   const daysSinceMostRecent = differenceInDays(currentDate, parseISO(mostRecent));

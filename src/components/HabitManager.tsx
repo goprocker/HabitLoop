@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { Plus, Trash2, CheckCircle2, Circle, Flame, MessageSquare, ChevronDown } from 'lucide-react';
+import { Trash2, CheckCircle2, Circle, Flame, MessageSquare, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Database } from '../types/database';
-import { HabitWithMetrics } from '../hooks/useHabits';
-import { format } from 'date-fns';
+import type { HabitWithMetrics } from '../hooks/useHabits';
 
 type HabitLog = Database['public']['Tables']['habit_logs']['Row'];
 
