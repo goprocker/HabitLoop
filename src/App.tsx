@@ -8,6 +8,8 @@ import { SleepTracker } from './components/SleepTracker';
 import { CorrelationChart } from './components/CorrelationChart';
 import { SocialShareCard } from './components/SocialShareCard';
 import { LoginPage } from './components/LoginPage';
+import { AboutPage } from './components/AboutPage';
+import { IdeaPage } from './components/IdeaPage';
 import { LandingPage } from './components/LandingPage';
 import { exportToCSV } from './utils/exporting';
 import { Download, RefreshCcw, Loader2, Share2, LogOut } from 'lucide-react';
@@ -152,7 +154,7 @@ function Dashboard({ signOut, userEmail }: { signOut: () => void; userEmail: str
 
 function App() {
   const { user, loading, signInWithGoogle, signOut } = useAuth();
-  const [view, setView] = useState<'landing' | 'login'>('landing');
+  const [view, setView] = useState<'landing' | 'login' | 'about' | 'idea'>('landing');
 
   if (loading) {
     return (
@@ -166,7 +168,19 @@ function App() {
     if (view === 'login') {
       return <LoginPage onSignIn={signInWithGoogle} onBack={() => setView('landing')} />;
     }
-    return <LandingPage onNavigateLogin={() => setView('login')} />;
+    if (view === 'about') {
+      return <AboutPage onBack={() => setView('landing')} />;
+    }
+    if (view === 'idea') {
+      return <IdeaPage onBack={() => setView('landing')} />;
+    }
+    return (
+      <LandingPage 
+        onNavigateLogin={() => setView('login')} 
+        onNavigateAbout={() => setView('about')}
+        onNavigateIdea={() => setView('idea')}
+      />
+    );
   }
 
   return <Dashboard signOut={signOut} userEmail={user.email || 'User'} />;

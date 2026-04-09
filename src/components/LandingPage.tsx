@@ -4,6 +4,8 @@ import { CheckCircle2, Flame, BarChart3, Share2, ArrowRight } from 'lucide-react
 
 interface LandingPageProps {
   onNavigateLogin: () => void;
+  onNavigateAbout: () => void;
+  onNavigateIdea: () => void;
 }
 
 const features = [
@@ -118,7 +120,7 @@ function ScrollReveal({ children, className, delay = 0 }: { children: React.Reac
   );
 }
 
-export function LandingPage({ onNavigateLogin }: LandingPageProps) {
+export function LandingPage({ onNavigateLogin, onNavigateAbout, onNavigateIdea }: LandingPageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef });
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -120]);
@@ -162,10 +164,20 @@ export function LandingPage({ onNavigateLogin }: LandingPageProps) {
           </div>
           <div className="hidden md:flex flex-row gap-8 items-center">
             <a href="#" className="text-sm text-[hsl(var(--cinema-foreground))] transition-colors">Home</a>
-            <a href="#" className="text-sm text-[hsl(var(--cinema-muted-foreground))] hover:text-[hsl(var(--cinema-foreground))] transition-colors">Studio</a>
-            <a href="#" className="text-sm text-[hsl(var(--cinema-muted-foreground))] hover:text-[hsl(var(--cinema-foreground))] transition-colors">About</a>
-            <a href="#" className="text-sm text-[hsl(var(--cinema-muted-foreground))] hover:text-[hsl(var(--cinema-foreground))] transition-colors">Journal</a>
-            <a href="#" className="text-sm text-[hsl(var(--cinema-muted-foreground))] hover:text-[hsl(var(--cinema-foreground))] transition-colors">Reach Us</a>
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onNavigateIdea(); }}
+              className="text-sm text-[hsl(var(--cinema-muted-foreground))] hover:text-[hsl(var(--cinema-foreground))] transition-colors"
+            >
+              Idea
+            </a>
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onNavigateAbout(); }}
+              className="text-sm text-[hsl(var(--cinema-muted-foreground))] hover:text-[hsl(var(--cinema-foreground))] transition-colors"
+            >
+              About Me
+            </a>
           </div>
           <button
             onClick={onNavigateLogin}
