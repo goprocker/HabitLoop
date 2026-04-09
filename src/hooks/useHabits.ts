@@ -6,6 +6,7 @@ import { calculateStreaks } from '../utils/streaks';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 type HabitLog = Database['public']['Tables']['habit_logs']['Row'];
+export type SleepLog = Database['public']['Tables']['sleep_logs']['Row'];
 
 export interface HabitWithMetrics extends Habit {
   currentStreak: number;
@@ -15,6 +16,7 @@ export interface HabitWithMetrics extends Habit {
 export function useHabits(currentDate: Date) {
   const [habits, setHabits] = useState<HabitWithMetrics[]>([]);
   const [logs, setLogs] = useState<HabitLog[]>([]);
+  const [sleepLogs, setSleepLogs] = useState<SleepLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +37,14 @@ export function useHabits(currentDate: Date) {
 
       if (logsError) throw logsError;
 
+      const { data: sleepData, error: sleepError } = await supabase
+        .from('sleep_logs')
+        .select('*');
+
+      if (sleepError) throw sleepError;
+
       const fullLogs = logsData || [];
+      const fullSleepLogs = sleepData || [];
 
       // Augment habits with streaks
       const augmentedHabits = ((habitsData || []) as Habit[]).map((h: Habit) => {
@@ -49,6 +58,7 @@ export function useHabits(currentDate: Date) {
 
       setHabits(augmentedHabits);
       setLogs(fullLogs);
+      setSleepLogs(fullSleepLogs);
     } catch (err: any) {
       console.error('Error fetching data:', err);
       setError(err.message);
@@ -126,12 +136,43 @@ export function useHabits(currentDate: Date) {
         } as any);
 
       if (error) throw error;
-      
-      // We don't recalculate streaks locally for seamless speed, or we can just refetch in bg
       fetchHabitsAndLogs();
     } catch (err: any) {
       console.error('Error toggling habit:', err);
       fetchHabitsAndLogs(); 
+    }
+  };
+
+  const updateSleepLog = async (date: Date, hours_slept: number, is_restful: boolean) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const existingLog = sleepLogs.find((s) => s.logged_date === dateStr);
+    
+    const updatedLog: SleepLog = {
+      id: existingLog?.id || crypto.randomUUID(),
+      logged_date: dateStr,
+      hours_slept,
+      is_restful
+    };
+
+    setSleepLogs((prev) => {
+      const filtered = prev.filter((s) => s.logged_date !== dateStr);
+      return [...filtered, updatedLog];
+    });
+
+    try {
+      const { error } = await supabase
+        .from('sleep_logs')
+        .upsert({
+          ...(existingLog?.id ? { id: existingLog.id } : {}),
+          logged_date: dateStr,
+          hours_slept,
+          is_restful
+        } as any);
+      if (error) throw error;
+      fetchHabitsAndLogs();
+    } catch (err: any) {
+      console.error('Error updating sleep:', err);
+      fetchHabitsAndLogs();
     }
   };
 
@@ -141,6 +182,8 @@ export function useHabits(currentDate: Date) {
     (l) => l.logged_date === todayStr && l.status === true
   ).length;
 
+  const todaySleep = sleepLogs.find(s => s.logged_date === todayStr);
+
   const progressPercentage = activeHabitsToday === 0 
     ? 0 
     : Math.round((completedHabitsToday / activeHabitsToday) * 100);
@@ -148,12 +191,15 @@ export function useHabits(currentDate: Date) {
   return {
     habits,
     logs,
+    sleepLogs,
     loading,
     error,
     addHabit,
     deleteHabit,
     toggleHabitLog,
+    updateSleepLog,
     todayStr,
+    todaySleep,
     progressPercentage,
     activeHabitsToday,
     completedHabitsToday

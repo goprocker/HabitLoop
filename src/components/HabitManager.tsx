@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, CheckCircle2, Circle, Flame, MessageSquare, ChevronDown } from 'lucide-react';
+import { Trash2, CheckCircle2, Circle, Flame, MessageSquare, ChevronDown, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Database } from '../types/database';
 import type { HabitWithMetrics } from '../hooks/useHabits';
@@ -245,6 +245,19 @@ export function HabitManager({
               ))}
             </AnimatePresence>
           </div>
+        )}
+        {habits.length === 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-20 bg-slate-900/50 border border-slate-800/50 rounded-2xl backdrop-blur-md"
+          >
+            <div className="w-20 h-20 bg-slate-800/50 rounded-2xl border border-slate-700/50 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-sky-500/5">
+              <Plus className="w-10 h-10 text-slate-600" />
+            </div>
+            <h4 className="text-2xl font-black text-white mb-2 tracking-tight">No habits for today—start a new loop</h4>
+            <p className="text-sm text-slate-500 font-bold max-w-sm mx-auto uppercase tracking-widest">Initialize your routine above to begin correlation tracking.</p>
+          </motion.div>
         )}
       </div>
     </div>

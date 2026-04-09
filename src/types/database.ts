@@ -58,6 +58,26 @@ export interface Database {
           logged_date?: string
         }
       }
+      sleep_logs: {
+        Row: {
+          id: string
+          logged_date: string
+          hours_slept: number
+          is_restful: boolean
+        }
+        Insert: {
+          id?: string
+          logged_date: string
+          hours_slept?: number
+          is_restful?: boolean
+        }
+        Update: {
+          id?: string
+          logged_date?: string
+          hours_slept?: number
+          is_restful?: boolean
+        }
+      }
     }
   }
 }

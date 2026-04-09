@@ -18,34 +18,46 @@ CREATE TABLE IF NOT EXISTS public.habit_logs (
   UNIQUE(habit_id, logged_date)
 );
 
+-- Create sleep_logs table
+CREATE TABLE IF NOT EXISTS public.sleep_logs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  logged_date DATE NOT NULL,
+  hours_slept FLOAT DEFAULT 0.0 NOT NULL,
+  is_restful BOOLEAN DEFAULT false NOT NULL,
+  UNIQUE(logged_date)
+);
+
 -- Set Row Level Security
 ALTER TABLE public.habits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.habit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sleep_logs ENABLE ROW LEVEL SECURITY;
 
 -- Create Policies
 -- Make everything accessible for anonymous (local/dev testing bypass)
 
 CREATE POLICY "Enable read access for all users"
   ON public.habits FOR SELECT USING (true);
-
 CREATE POLICY "Enable insert for all users"
   ON public.habits FOR INSERT WITH CHECK (true);
-
 CREATE POLICY "Enable update for all users"
   ON public.habits FOR UPDATE USING (true);
-
 CREATE POLICY "Enable delete for all users"
   ON public.habits FOR DELETE USING (true);
 
-
 CREATE POLICY "Enable read access for all users"
   ON public.habit_logs FOR SELECT USING (true);
-
 CREATE POLICY "Enable insert for all users"
   ON public.habit_logs FOR INSERT WITH CHECK (true);
-
 CREATE POLICY "Enable update for all users"
   ON public.habit_logs FOR UPDATE USING (true);
-
 CREATE POLICY "Enable delete for all users"
   ON public.habit_logs FOR DELETE USING (true);
+
+CREATE POLICY "Enable read access for all users"
+  ON public.sleep_logs FOR SELECT USING (true);
+CREATE POLICY "Enable insert for all users"
+  ON public.sleep_logs FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users"
+  ON public.sleep_logs FOR UPDATE USING (true);
+CREATE POLICY "Enable delete for all users"
+  ON public.sleep_logs FOR DELETE USING (true);
