@@ -41,8 +41,8 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-};
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
+} as const;
 
 export function LandingPage({ onSignIn }: LandingPageProps) {
   return (
@@ -116,7 +116,7 @@ export function LandingPage({ onSignIn }: LandingPageProps) {
           The core loop
         </motion.h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((f, i) => (
+          {features.map((f) => (
             <motion.div
               key={f.title}
               variants={fadeUp}
